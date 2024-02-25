@@ -36,13 +36,13 @@ class CommandTests(SimpleTestCase):
     def test_wait_for_db_delay(self, patched_sleep, patched_check):
         """Test waiting for database when getting OperationalError"""
 
-        ## noqa NOTE:This how mocking is performed for OperationalErrors from psycopg2 and normal
-        ## noqaOperationalerrors raises when db is not ready.
+        ## noqa NOTE:This how mockinag is performed for OperationlErrors from psycopg2 and normal
+        ## noqa Operationalerrors raises when db is not ready.
         ## noqa --here need to raise exception if the database was not ready.
-        ## noqa --thus using .side_effect 
+        ## noqa --thus using .side_effect
         ## noqa ----The first 2 times test raises Psycopg2Error
         ## noqa ----The nxt 3 times raise OperationalError
-        ## noqa ----Then return True 
+        ## noqa ----Then return True
         patched_check.side_effect = [Psycopg2Error] * 2 + \
                                     [OperationalError] * 3 + \
                                     [True]
