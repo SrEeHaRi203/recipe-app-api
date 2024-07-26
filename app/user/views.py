@@ -1,7 +1,7 @@
 """
 Views for the user API
 """
-from rest_framework import generics
+from rest_framework import generics, authentication, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
 
@@ -26,3 +26,19 @@ class CreateTokenView(ObtainAuthToken):
     ## noqa NOTE: (optional) uses the default rendered class for ObtainAuthToken,
     ## noqa to show in the UI, as overriding the serializer will not include it by default
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class ManageUserView(generics.RetrieveUpdateAPIView):
+    """Manage the authenticated user."""
+    ## noqa NOTE:RetrieveUpdateAPIView for retrieving and updating obj in the database.
+    ## noqa NOTE:user modified UserSerializer.
+    serializer_class = UserSerializer
+    ## noqa NOTE: To get the authentication and permissions for using this API.
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    ## noqa NOTE: get_object is overrided, get_objects gets the objects for http get request or any request for this API.
+    ## noqa NOTE: Here overrides to get the
+    def get_object(self):
+        """Retrieve and return the authenticated User."""
+        return self.request.user

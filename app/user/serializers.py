@@ -26,6 +26,24 @@ class UserSerializer(serializers.ModelSerializer):
         """Create a return a user with encrypted password"""
         return get_user_model().objects.create_user(**validated_data)
 
+    def update(self, instance, validated_data):
+        """Update and return user."""
+        ## noqa NOTE: This function takes in the models instance to be updated and,
+        ## noqa   the validated_data passed through the serializer validation for update.
+
+        ## noqa NOTE: pop out the password from dictionary,
+        password = validated_data.pop('password', None)
+        ## noqa NOTE: Calls the update method from the ModelSerializer.
+        user = super().update(instance, validated_data)
+
+        ## noqa NOTE: if user specified password ie, not None
+        if password:
+            ## noqa NOTE: sets new password saves and returns user back.
+            user.set_password(password)
+            user.save()
+
+        return user
+
 
 class AuthTokenSerializer(serializers.Serializer):
     """Serializer for the uesr auth token"""

@@ -12,7 +12,7 @@ from rest_framework import status
 ## noqa NOTE: This gets the url of the funciton create of user app.
 CREATE_USER_URLS = reverse('user:create')
 TOKEN_URL = reverse('user:token')
-
+ME_URL = reverse('user:me')
 
 def create_user(**params):
     """Create and return a new user."""
@@ -123,3 +123,61 @@ class PublicUserApiTest(TestCase):
 
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_unauthorized(self):
+        """Test authentication is required for user."""
+        res = self.client.get(ME_URL)
+        ## noqa NOTE:Making an unauthenticated request.
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PrivateUserApiTest(TestCase):
+    """Test API requests that require authentication."""
+
+    def setUp(self):
+        ## noqa NOTE: Create a test user to test.
+        self.user = create_user(
+            email='test@example.com',
+            password='testpass123',
+            name='Test Name'
+        )
+        ## noqa NOTE: Create an API testing client.
+        self.client = APIClient()
+        ## noqa NOTE:Forces the authentication to a specific user,
+        ## noqa so that we don't need to do the real authentication.
+        ## noqa NOTE: Any request from this client will be authenticated with the specified user.
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_profile_success(self):
+        """Test retrieving profile for logged user."""
+        ## noqa NOTE: Retrive the details of current authenticated user.
+        res = self.client.get(ME_URL)
+        ## noqa NOTE: Checks if data is correct.
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data, {
+            'name': self.user.name,
+            'email': self.user.email,
+        })
+
+    def test_post_me_not_allowed(self):
+        """Test POST is not allowed in the me endpoint."""
+        ## noqa NOTE: This API's post method is disabled, only put and patch.
+        res = self.client.post(ME_URL,{})
+
+        self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+    def test_update_user_profile(self):
+        """Test updating the user profile for the authenticated user."""
+        payload = {'name': 'Updated Name',
+                   'password': 'newpassword123'
+                   }
+
+        res = self.client.patch(ME_URL, payload)
+
+        ## noqa NOTE: Refreshes the user details, not refreshed by default.
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.name, payload['name'])
+        self.assertTrue(self.user.check_password(payload['password']))
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
