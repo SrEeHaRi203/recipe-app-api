@@ -14,6 +14,7 @@ CREATE_USER_URLS = reverse('user:create')
 TOKEN_URL = reverse('user:token')
 ME_URL = reverse('user:me')
 
+
 def create_user(**params):
     """Create and return a new user."""
     return get_user_model().objects.create_user(**params)
@@ -162,10 +163,9 @@ class PrivateUserApiTest(TestCase):
     def test_post_me_not_allowed(self):
         """Test POST is not allowed in the me endpoint."""
         ## noqa NOTE: This API's post method is disabled, only put and patch.
-        res = self.client.post(ME_URL,{})
+        res = self.client.post(ME_URL, {})
 
         self.assertEqual(res.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
     def test_update_user_profile(self):
         """Test updating the user profile for the authenticated user."""
