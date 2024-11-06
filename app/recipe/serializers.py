@@ -40,7 +40,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         ## noqa NOTE: This removes tags data from validated_data,
         tags = validated_data.pop('tags', [])
         ## noqa NOTE: Create recipe with the remaining data.
-        recipe  = Recipe.objects.create(**validated_data)
+        recipe = Recipe.objects.create(**validated_data)
         ## noqa NOTE: context is passed form the view to the serializer
         self._get_or_create_tags(tags, recipe)
         return recipe
@@ -67,6 +67,3 @@ class RecipeDetailSerializer(RecipeSerializer):
 
     class Meta(RecipeSerializer.Meta):
         fields = RecipeSerializer.Meta.fields + ['description']
-
-
-
