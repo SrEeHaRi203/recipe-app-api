@@ -13,12 +13,13 @@ from core.models import Tag
 
 from recipe.serializers import TagSerializer
 
-
+## noqa NOTE: The -list is to list the items in tag
 TAGS_URL = reverse('recipe:tag-list')
 
 
 def detail_url(tag_id):
     """Crate and return a tag detail url."""
+    ## noqa NOTE: The -list is for individual tag details.
     return reverse('recipe:tag-detail', args=[tag_id])
 
 
