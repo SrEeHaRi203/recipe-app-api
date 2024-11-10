@@ -95,11 +95,11 @@ class ModelTests(TestCase):
 
         self.assertEqual(str(ingredient), ingredient.name)
 
-    ##noqa NOTE: the decorator mocks the behaviour of the built in uuid function.
+    ## noqa NOTE: the decorator mocks the behaviour of the built in uuid function.
     @patch('core.models.uuid.uuid4')
     def test_recipe_file_name_uuid(self, mock_uuid):
         """Test generating image path."""
-        ##noqa NOTE: This is the mocked response.
+        ## noqa NOTE: This is the mocked response.
         uuid = 'test-uuid'
         mock_uuid.return_value = uuid
         file_path = models.recipe_image_file_path(None, 'example.jpg')
